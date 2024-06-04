@@ -1,0 +1,11 @@
+name = "csoc_backend"
+route = "csoc-api.040203.xyz"
+compatibility_date = "2023-12-01"
+
+[vars]
+MY_VAR = "my-variable"
+
+[[d1_databases]]
+binding = "CSOC_DB"
+database_name = "csoc-db"
+database_id = "10c25a65-e87f-452c-a663-0c2efbd11fbe"
