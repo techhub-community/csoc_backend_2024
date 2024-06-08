@@ -26,9 +26,10 @@ authApp.post('/login', async (c) => {
   const token = await signPayload({ email }, "7d");
 
   return c.json({
-    ...(await getTeamNInviteData(user.id)),
+    ...(await getTeamNInviteData(user.id, user.program)),
     props: JSON.parse(user.props ?? "{}"),
     verified: user.verified,
+    program: user.program,
     about: user.about,
     name: user.name,
     token,
@@ -49,9 +50,10 @@ authApp.post('/session', async (c) => {
     if (!user) return c.json({ valid: false }, 401);
     
     return c.json({
-      ...(await getTeamNInviteData(user.id)),
+      ...(await getTeamNInviteData(user.id, user.program)),
       props: JSON.parse(user.props ?? "{}"),
       verified: user.verified,
+      program: user.program,
       about: user.about,
       name: user.name,
       token,
@@ -63,18 +65,19 @@ authApp.post('/session', async (c) => {
 });
 
 authApp.post('/register', async (c) => {
-  const { name, password, email, mobile, about, opt } = await c.req.json();
+  const { name, password, email, mobile, about, opt, program } = await c.req.json();
+  const hashedPassword = bcrypt.hashSync(password, 10);
   const db = database();
 
   if (!emailRegex.test(email)) return c.json({ error: 'Invalid email format' }, 400);
   if (!mobileRegex.test(mobile)) return c.json({ error: 'Invalid mobile number' }, 400);
+  if (!["web", "app", "dsa"].includes(program)) return c.json({ error: 'Invalid program selected' }, 400);
   if (!passwordRegex.test(password)) return c.json({ error: 'Invalid password format must conatain at least one letter and one number and at least 8 characters long' }, 400);
-
-  const hashedPassword = bcrypt.hashSync(password, 10);
 
   const newUser = {
     password: hashedPassword,
     verified: false,
+    program,
     mobile,
     email,
     about,
@@ -94,21 +97,23 @@ authApp.post('/register', async (c) => {
 
     if (opt) {
       try {
-        const { email: _, sender } = (await jose
+        const { email: _, sender, senderProgram } = (await jose
           .jwtVerify(opt, JWT_SECRET)).payload as {
+            senderProgram: string;
             sender: number;
             email: string;
           };
 
+        if (program !== senderProgram) return c.json({ error: 'Registration successful but Mismatching program found' }, 400);
         const idReq = await db.selectFrom("users").select("id")
           .where("email", "=", email).executeTakeFirst();
-        if (!idReq) return c.json({ error: 'Mismatching email found' }, 400);
+        if (!idReq) return c.json({ error: 'Registration successful but Mismatching email found' }, 400);
 
-        if (!(await addToTeam(sender, idReq.id)))
-          return c.json({ error: 'Team is already full.' }, 404);
+        if (!(await addToTeam(sender, idReq.id, program)))
+          return c.json({ error: 'Registration successful but Team is already full.' }, 404);
       } catch (error) {
         console.log(error);
-        return c.json({ error: 'Internal issue handling team join request' }, 500);
+        return c.json({ error: 'Registration successful but unable to join team' }, 500);
       }
     }
     
@@ -169,8 +174,14 @@ authApp.post('/update-password', async (c) => {
   }
 });
 
-async function getTeamNInviteData(userId: number) {
+async function getTeamNInviteData(userId: number, program: string) {
   const db = database();
+
+  const suggestions = (await db.selectFrom('users')
+    .select('email').where(qb =>
+      qb('program', '=', program)
+      .and("id", "!=", userId)
+    ).execute()).map(u => u.email);
 
   const inviteRec = await db.selectFrom("requests")
     .innerJoin("users", "sender_id", "users.id")
@@ -219,5 +230,5 @@ async function getTeamNInviteData(userId: number) {
     l: teamRec.leader_email
   } : null;
 
-  return { invite, type, team, pendings };
+  return { invite, type, team, pendings, suggestions };
 }

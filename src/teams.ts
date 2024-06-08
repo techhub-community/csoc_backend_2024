@@ -45,8 +45,9 @@ teamsApp.post('/send-invite', async (c) => {
     
     if (!receiver) {
       const tempName = (receiverEmail as string).split('@')[0];
-      url += `?register=true&email=${receiverEmail}&opt=${await signPayload({
+      url += `?register=true&program=${sender.program}&email=${receiverEmail}&opt=${await signPayload({
         asl: Math.random() * 100000000,
+        senderProgram: sender.program,
         email: receiverEmail,
         sender: sender.id
       }, '14d')}`;
@@ -64,6 +65,7 @@ teamsApp.post('/send-invite', async (c) => {
       continue;
     }
 
+    if (receiver.program !== sender.program) continue; // Program should be same for all team members
     if (sender.id === receiver.id) continue; // Can't invite yourself
 
     const hasInvites = await db.selectFrom("requests").selectAll()
@@ -126,14 +128,15 @@ teamsApp.post('/process-invite', async (c) => {
     const sender = await db.selectFrom('users').selectAll().where('id', '=', pendingRequest.sender_id).executeTakeFirst();
     if (!sender) return c.json({ error: 'Sender not found.' }, 404);
 
-    if (!(await addToTeam(sender.id, receiver.id))) return c.json({ error: 'Team is already full.' }, 400);
+    if (!(await addToTeam(sender.id, receiver.id, sender.program)))
+      return c.json({ error: 'Team is already full.' }, 400);
     return c.json({ message: 'Team joined successfully.' }, 200);
   }
 
   return c.json({ message: 'Invite rejected successfully.' }, 200);
 });
 
-export async function addToTeam(sender: number, receiver: number) {
+export async function addToTeam(sender: number, receiver: number, program: string) {
   const db = database();
 
   const team = await db.selectFrom("teams").selectAll()
@@ -156,6 +159,7 @@ export async function addToTeam(sender: number, receiver: number) {
   } else {
     await db.insertInto('teams').values({
       member1_id: receiver,
+      team_type: program,
       leader_id: sender
     }).execute();
   }

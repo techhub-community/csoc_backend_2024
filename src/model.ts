@@ -4,6 +4,7 @@ interface UserTable {
   id: Generated<number>;
   name: string;
   mobile: string;
+  program: string;
   password: string;
   email: string;
   about?: string;
@@ -21,6 +22,7 @@ interface MessageTable {
 
 interface TeamTable {
   team_id: Generated<number>;
+  team_type: string;
   leader_id: number;
   member1_id?: number;
   member2_id?: number;
