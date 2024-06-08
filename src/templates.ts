@@ -1,4 +1,4 @@
-export const accVerifyHtml = `
+export const accVerifyHtml = (link: string) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,9 +56,9 @@ export const accVerifyHtml = `
         </div>
         <p>Hi there,</p>
         <p>Thank you for registering in CSOC 2024 program. To complete your registration, please verify your email address by clicking the button below:</p>
-        <a href="{{_link_}}" class="button">Verify Your Account</a>
+        <a href="${link}" class="button">Verify Your Account</a>
         <p>If the button doesn't work, please copy and paste the following link into your browser:</p>
-        <p><a href="{{_link_}}">{{_link_}}</a></p>
+        <p><a href="${link}">${link}</a></p>
         <p>Welcome aboard!</p>
         <p>The Codeshack Team</p>
         <div class="footer">
@@ -69,21 +69,21 @@ export const accVerifyHtml = `
 </html>
 `
 
-export const accVerifyText = `
+export const accVerifyText = (link: string) => `
 Welcome to Codeshack Mentorship Program!
 
 Hi there,
 
 Thank you for registering in CSOC 2024 program. To complete your registration, please verify your email address by clicking the link below:
 
-Verify Your Account: {{_link_}}
+Verify Your Account: ${link}
 
 Welcome aboard!
 
 The Codeshack Team
 `
 
-export const forgotHtml = `
+export const forgotHtml = (link: string) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -141,9 +141,9 @@ export const forgotHtml = `
         </div>
         <p>Hi there,</p>
         <p>We received a request to reset your password. Click the button below to reset your password:</p>
-        <a href="{{_link_}}" class="button">Reset Password</a>
+        <a href="${link}" class="button">Reset Password</a>
         <p>If the button doesn't work, please copy and paste the following link into your browser:</p>
-        <p><a href="{{_link_}}">{{_link_}}</a></p>
+        <p><a href="${link}">${link}</a></p>
         <p>If you didn't request a password reset, please ignore this email.</p>
         <p>The Codeshack Team</p>
         <div class="footer">
@@ -154,21 +154,21 @@ export const forgotHtml = `
 </html>
 `
 
-export const forgotText = `
+export const forgotText = (link: string) => `
 Reset Your Password
 
 Hi there,
 
 We received a request to reset your password. Click the link below to reset your password:
 
-Reset Password: {{_link_}}
+Reset Password: ${link}
 
 If you didn't request a password reset, please ignore this email.
 
 The Codeshack Team
 `
 
-export const inviteHtml = `
+export const inviteHtml = (name: string, email: string, link: string) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -225,7 +225,10 @@ export const inviteHtml = `
             <h1>You're Invited to Join a Team!</h1>
         </div>
         <p>Hi there,</p>
-        <p><strong>{{_user_}}</strong> has invited you to join their team on CSOC.<br/>Please login and accept the invitation.</p>
+        <p><strong>${name} (${email})</strong> has invited you to join their team on CSOC.<br/>Please login and accept the invitation.</p>
+        <a href="${link}" class="button">Accept Invite</a>
+        <p>If the button doesn't work, please copy and paste the following link into your browser:</p>
+        <p><a href="${link}">${link}</a></p>
         <p>We look forward to seeing you collaborate!</p>
         <p>The Codeshack Team</p>
         <div class="footer">
@@ -236,14 +239,16 @@ export const inviteHtml = `
 </html>
 `;
 
-export const inviteText = `
+export const inviteText = (name: string, email: string, link: string) => `
 You're Invited to Join a Team!
 
 Hi there,
 
-{{_user_}} has invited you to join their team on Codeshack.
+${name} (${email}) has invited you to join their team on Codeshack.
 
 Please login and accept the invitation.
+
+Or go here to accept the invite: ${link}
 
 We look forward to seeing you collaborate!
 

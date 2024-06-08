@@ -20,6 +20,12 @@ dependencies:
   juice:
     specifier: ^10.0.0
     version: 10.0.0
+  kysely:
+    specifier: ^0.27.3
+    version: 0.27.3
+  kysely-d1:
+    specifier: ^0.3.0
+    version: 0.3.0(kysely@0.27.3)
 
 devDependencies:
   '@cloudflare/workers-types':
@@ -718,6 +724,19 @@ packages:
       web-resource-inliner: 6.0.1
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /kysely-d1@0.3.0(kysely@0.27.3):
+    resolution: {integrity: sha512-9wTbE6ooLiYtBa4wPg9e4fjfcmvRtgE/2j9pAjYrIq+iz+EsH/Hj9YbtxpEXA6JoRgfulVQ1EtGj6aycGGRpYw==}
+    peerDependencies:
+      kysely: '*'
+    dependencies:
+      kysely: 0.27.3
+    dev: false
+
+  /kysely@0.27.3:
+    resolution: {integrity: sha512-lG03Ru+XyOJFsjH3OMY6R/9U38IjDPfnOfDgO3ynhbDr+Dz8fak+X6L62vqu3iybQnj+lG84OttBuU9KY3L9kA==}
+    engines: {node: '>=14.0.0'}
     dev: false
 
   /magic-string@0.25.9:
