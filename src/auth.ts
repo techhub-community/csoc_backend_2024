@@ -73,6 +73,9 @@ authApp.post('/register', async (c) => {
   if (typeof usn !== "string" || usn.length !== 10 || !usn.toLowerCase().startsWith("1mv2"))
     return c.json({ error: "Invalid or Unacceptable USN" }, 400);
 
+  if (!(usn.toLowerCase().startsWith("1mv24") || (usn.toLowerCase().startsWith("1mv23") && program !== "dsa")))
+    return c.json({ error: "First years (1mv24) can register for any program, while second years (1mv23) can only register for web or app programs" }, 400);
+
   if (!emailRegex.test(email)) return c.json({ error: 'Invalid email format' }, 400);
   if (!mobileRegex.test(mobile)) return c.json({ error: 'Invalid mobile number' }, 400);
   if (!["web", "app", "dsa"].includes(program)) return c.json({ error: 'Invalid program selected' }, 400);

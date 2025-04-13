@@ -77,13 +77,14 @@ flowsApp.post('/update-about', async (c) => {
 });
 
 flowsApp.post('/update-usn', async (c) => {
+  return c.json({ error: 'Change of USN is not allowed' }, 400);
   const { token, usn } = await c.req.json();
   const db = database();
 
   try {
     if (typeof usn !== "string" || usn.length !== 10 || !usn.toLowerCase().startsWith("1mv2"))
       return c.json({ error: "Invalid or Unacceptable USN" }, 400);
-    
+
     const { payload } = await jose.jwtVerify(token, JWT_SECRET);
     const { email } = payload as { email: string };
 
