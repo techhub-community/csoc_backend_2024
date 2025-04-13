@@ -1,8 +1,10 @@
 name = "csoc_backend"
 route = "csoc-api.040203.xyz"
 compatibility_date = "2023-12-01"
+account_id = "e667e3076508cea6ec0141906c7dd854"
 
 [[d1_databases]]
 binding = "CSOC_DB"
-database_name = "csoc-db"
-database_id = "10c25a65-e87f-452c-a663-0c2efbd11fbe"
+database_name = "csoc-db-25"
+database_id = "a74d4b75-8ff8-4318-832c-9c5501c49225"
+migrations_dir = "migrations"

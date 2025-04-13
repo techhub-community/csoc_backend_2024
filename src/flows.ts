@@ -76,6 +76,28 @@ flowsApp.post('/update-about', async (c) => {
   }
 });
 
+flowsApp.post('/update-usn', async (c) => {
+  const { token, usn } = await c.req.json();
+  const db = database();
+
+  try {
+    if (typeof usn !== "string" || usn.length !== 10 || !usn.toLowerCase().startsWith("1mv2"))
+      return c.json({ error: "Invalid or Unacceptable USN" }, 400);
+    
+    const { payload } = await jose.jwtVerify(token, JWT_SECRET);
+    const { email } = payload as { email: string };
+
+    // Update user's usn information
+    await db.updateTable("users").set({ usn })
+      .where('email', '=', email)
+      .execute();
+    
+    return c.json({ success: true });
+  } catch (e) {
+    return c.json({ error: 'Invalid token' }, 401);
+  }
+});
+
 flowsApp.post('/send-message', async (c) => {
   const { name, email, subject, message } = await c.req.json();
   const db = database();

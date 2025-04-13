@@ -56,6 +56,7 @@ authApp.post('/session', async (c) => {
       program: user.program,
       about: user.about,
       name: user.name,
+      usn: user.usn,
       token,
       email
     });
@@ -65,9 +66,12 @@ authApp.post('/session', async (c) => {
 });
 
 authApp.post('/register', async (c) => {
-  const { name, password, email, mobile, about, opt, program } = await c.req.json();
+  const { name, password, email, usn, mobile, about, opt, program } = await c.req.json();
   const hashedPassword = bcrypt.hashSync(password, 10);
   const db = database();
+
+  if (typeof usn !== "string" || usn.length !== 10 || !usn.toLowerCase().startsWith("1mv2"))
+    return c.json({ error: "Invalid or Unacceptable USN" }, 400);
 
   if (!emailRegex.test(email)) return c.json({ error: 'Invalid email format' }, 400);
   if (!mobileRegex.test(mobile)) return c.json({ error: 'Invalid mobile number' }, 400);
@@ -81,7 +85,8 @@ authApp.post('/register', async (c) => {
     mobile,
     email,
     about,
-    name
+    name,
+    usn
   };
 
   try {

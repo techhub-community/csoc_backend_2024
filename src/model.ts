@@ -3,6 +3,7 @@ import { Generated } from 'kysely';
 interface UserTable {
   id: Generated<number>;
   name: string;
+  usn: string;
   mobile: string;
   program: string;
   password: string;
